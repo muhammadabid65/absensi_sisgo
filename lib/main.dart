@@ -328,7 +328,7 @@ class _LoginPageState extends State<_LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -356,7 +356,7 @@ class _LoginPageState extends State<_LoginPage> {
               );
             }
 
-             // TAMPILAN MOBILE
+            // TAMPILAN MOBILE
             return _mobileLogin(context, constraints);
           },
         ),
@@ -366,240 +366,188 @@ class _LoginPageState extends State<_LoginPage> {
 
   // ---------- TAMPILAN MOBILE ----------
   Widget _mobileLogin(BuildContext context, BoxConstraints constraints) {
-    // Tinggi layar penuh (tidak berubah saat keyboard muncul).
-    final fullHeight =
-        MediaQuery.sizeOf(context).height - MediaQuery.paddingOf(context).vertical;
-
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFF1F6FC), Colors.white],
-        ),
-      ),
+      color: const Color(0xFFF8FAF9),
       child: Stack(
         children: [
-                   // Ornamen biru kanan bawah (dikunci ke tinggi layar penuh)
-          Positioned(
-            top: fullHeight - 200,
-            right: -140,
-            child: Container(
-              width: 320,
-              height: 320,
-              decoration: const BoxDecoration(
-                color: Color(0x332D8FD0),
-                shape: BoxShape.circle,
+          // Ornamen Gelombang Kanan Bawah (TIDAK naik saat keyboard muncul)
+          const Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            height: 180,
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _BottomWavePainter(),
               ),
             ),
           ),
-          Positioned(
-            top: fullHeight - 130,
-            right: -90,
-            child: Container(
-              width: 240,
-              height: 240,
-              decoration: const BoxDecoration(
-                color: Color(0xFF2D8FD0),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          // Titik-titik oranye kanan atas
-          const Positioned(top: 54, right: 24, child: _DotGrid()),
 
-          // Konten
-                              SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              24,
-              0,
-              24,
-              MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Form(
-                  key: widget.formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 32),
-                      const Spacer(flex: 2),                  
-
-                    // LOGO (tengah)
-                    Center(
-                      child: Image.asset(
-                        'assets/logo_sisgo.png',
-                        height: 64,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const _BrandLockup(large: true),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // JUDUL (1 baris)
-                    const Text.rich(
-                      TextSpan(
-                        style: TextStyle(
-                          color: Color(0xFF102E56),
-                          fontSize: 36,
-                          height: 1.1,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        children: [
-                          TextSpan(text: 'Selamat '),
-                          TextSpan(
-                            text: 'Datang',
-                            style: TextStyle(color: Color(0xFFFF831B)),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    const Text(
-                      'Masuk untuk melanjutkan ke ruang kerja Anda.',
-                      style: TextStyle(
-                        color: Color(0xFF3F5575),
-                        fontSize: 16,
-                        height: 1.4,
-                      ),
-                    ),
-
-                    const SizedBox(height: 26),
-
-                    // KARTU FORM
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF102E56)
-                                .withValues(alpha: 0.08),
-                            blurRadius: 24,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: widget.emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            style: const TextStyle(color: _ink, fontSize: 15),
-                            decoration: _mobileFieldDecoration(
-                              hint: 'Email kerja',
-                              icon: Icons.mail_outline_rounded,
-                            ),
-                            validator: (value) =>
-                                value == null || !value.contains('@')
-                                    ? 'Masukkan email kerja yang valid'
-                                    : null,
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: widget.passwordController,
-                            obscureText: !_passwordVisible,
-                            style: const TextStyle(color: _ink, fontSize: 15),
-                            decoration: _mobileFieldDecoration(
-                              hint: 'Kata sandi',
-                              icon: Icons.lock_outline_rounded,
-                              suffix: IconButton(
-                                tooltip: _passwordVisible
-                                    ? 'Sembunyikan kata sandi'
-                                    : 'Tampilkan kata sandi',
-                                onPressed: () => setState(
-                                  () => _passwordVisible = !_passwordVisible,
-                                ),
-                                icon: Icon(
-                                  _passwordVisible
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                  color: const Color(0xFF17365D),
-                                ),
-                              ),
-                            ),
-                            validator: (value) =>
-                                value == null || value.length < 6
-                                    ? 'Kata sandi minimal 6 karakter'
-                                    : null,
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            height: 58,
-                            child: FilledButton(
-                              onPressed: widget.onSubmit,
-                              style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFFFF831B),
-                                foregroundColor: Colors.white,
-                                shape: const StadiumBorder(),
-                                elevation: 3,
-                                shadowColor: const Color(0xFFFF831B),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Masuk',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Icon(Icons.arrow_forward_rounded),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    // LUPA KATA SANDI (tengah)
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Hubungi admin untuk mengatur ulang kata sandi.',
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'Lupa kata sandi?',
-                          style: TextStyle(
-                            color: Color(0xFF1685D8),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Spacer(flex: 3),
-
-                    const Text(
-                      '© SISGO  ·  Sistem Informasi Kehadiran',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF3F5575),
-                        fontSize: 11,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
+          // Konten Utama Login (Dapat di-scroll jika keyboard aktif)
+          Positioned.fill(
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
+                child: IntrinsicHeight(
+                  child: Form(
+                    key: widget.formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+
+                        // LOGO & BRAND ASLI
+                        const _BrandLockup(large: true),
+
+                        const SizedBox(height: 32),
+
+                        // JUDUL
+                        const Text(
+                          'Selamat datang',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF152C3E),
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Masuk untuk melanjutkan\nke ruang kerja Anda.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF70808B),
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // FIELD EMAIL
+                        TextFormField(
+                          controller: widget.emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(color: _ink, fontSize: 14),
+                          decoration: _mobileFieldDecoration(
+                            hint: 'Email kerja',
+                            icon: Icons.mail_outline_rounded,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Masukkan email kerja Anda';
+                            }
+                            final emailRegex = RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            );
+                            if (!emailRegex.hasMatch(value.trim())) {
+                              return 'Masukkan email kerja yang valid';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // FIELD PASSWORD
+                        TextFormField(
+                          controller: widget.passwordController,
+                          obscureText: !_passwordVisible,
+                          style: const TextStyle(color: _ink, fontSize: 14),
+                          decoration: _mobileFieldDecoration(
+                            hint: 'Kata sandi',
+                            icon: Icons.lock_outline_rounded,
+                            suffix: IconButton(
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: const Color(0xFF70808B),
+                                size: 20,
+                              ),
+                              onPressed: () => setState(
+                                () => _passwordVisible = !_passwordVisible,
+                              ),
+                            ),
+                          ),
+                          validator: (value) => value == null || value.length < 6
+                              ? 'Kata sandi minimal 6 karakter'
+                              : null,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // TOMBOL MASUK ORANYE
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: FilledButton(
+                            onPressed: widget.onSubmit,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFFF18743),
+                              shape: const StadiumBorder(),
+                              elevation: 0,
+                            ),
+                            child: const Row(
+                              children: [
+                                Spacer(),
+                                Text(
+                                  'Masuk',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Spacer(),
+                                Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // LUPA KATA SANDI
+                        TextButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Hubungi admin untuk mengatur ulang kata sandi.',
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Lupa kata sandi?',
+                            style: TextStyle(
+                              color: Color(0xFF2D7FA3),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // FOOTER
+                        const Text(
+                          '© SISGO  ·  Sistem Informasi Kehadiran',
+                          style: TextStyle(
+                            color: Color(0xFF94A3B0),
+                            fontSize: 11,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -616,20 +564,20 @@ class _LoginPageState extends State<_LoginPage> {
   }) {
     OutlineInputBorder border(Color color, [double width = 1.2]) =>
         OutlineInputBorder(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(color: color, width: width),
         );
 
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Color(0xFF3F5575)),
-      prefixIcon: Icon(icon, color: const Color(0xFF17365D)),
+      hintStyle: const TextStyle(color: Color(0xFF94A3B0), fontSize: 14),
+      prefixIcon: Icon(icon, color: const Color(0xFF556877), size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: const Color(0xFFF7F9FD),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      border: border(const Color(0xFFE1E7F5)),
-      enabledBorder: border(const Color(0xFFE1E7F5)),
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: border(const Color(0xFFE2E8F0)),
+      enabledBorder: border(const Color(0xFFE2E8F0)),
       focusedBorder: border(_blue, 1.5),
       errorBorder: border(Colors.redAccent),
       focusedErrorBorder: border(Colors.redAccent, 1.5),
@@ -643,19 +591,19 @@ class _LoginPageState extends State<_LoginPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // LOGO
           Align(
             alignment: Alignment.centerLeft,
             child: Image.asset(
               'assets/logo_sisgo.png',
               height: isCompact ? 42 : 55,
               fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const _BrandLockup(),
             ),
           ),
 
           SizedBox(height: isCompact ? 28 : 44),
 
-          // JUDUL
           Text.rich(
             TextSpan(
               style: TextStyle(
@@ -699,7 +647,6 @@ class _LoginPageState extends State<_LoginPage> {
 
           SizedBox(height: isCompact ? 24 : 28),
 
-          // EMAIL
           TextFormField(
             controller: widget.emailController,
             keyboardType: TextInputType.emailAddress,
@@ -742,7 +689,6 @@ class _LoginPageState extends State<_LoginPage> {
 
           const SizedBox(height: 12),
 
-          // PASSWORD
           TextFormField(
             controller: widget.passwordController,
             obscureText: !_passwordVisible,
@@ -799,7 +745,6 @@ class _LoginPageState extends State<_LoginPage> {
                 : null,
           ),
 
-          // LUPA PASSWORD
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
@@ -826,7 +771,6 @@ class _LoginPageState extends State<_LoginPage> {
 
           const SizedBox(height: 8),
 
-          // TOMBOL MASUK
           SizedBox(
             height: isCompact ? 58 : 58,
             child: FilledButton(
@@ -853,7 +797,6 @@ class _LoginPageState extends State<_LoginPage> {
 
           SizedBox(height: isCompact ? 28 : 24),
 
-          // FOOTER
           Text(
             '© SISGO  ·  Sistem Informasi Kehadiran',
             textAlign: TextAlign.center,
@@ -868,38 +811,50 @@ class _LoginPageState extends State<_LoginPage> {
   }
 }
 
-// Membentuk sisi kanan panel putih menjadi melengkung.
-class _MobileLoginPanelClipper extends CustomClipper<Path> {
+class _BottomWavePainter extends CustomPainter {
+  const _BottomWavePainter();
+
   @override
-  Path getClip(Size size) {
-    return Path()
-      ..moveTo(0, 0)
-      ..lineTo(size.width * 0.96, 0)
-      ..cubicTo(
-        size.width * 0.78,
-        size.height * 0.12,
-        size.width * 0.75,
-        size.height * 0.30,
-        size.width * 0.84,
-        size.height * 0.45,
+  void paint(Canvas canvas, Size size) {
+    final bluePath = Path()
+      ..moveTo(size.width * 0.3, size.height)
+      ..quadraticBezierTo(
+        size.width * 0.6,
+        size.height * 0.7,
+        size.width,
+        size.height * 0.75,
       )
-      ..cubicTo(
-        size.width * 0.94,
-        size.height * 0.62,
-        size.width * 0.77,
-        size.height * 0.82,
-        size.width * 0.92,
-        size.height,
-      )
-      ..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
       ..close();
+
+    final bluePaint = Paint()
+      ..color = const Color(0xFF2D7FA3)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(bluePath, bluePaint);
+
+    final orangePath = Path()
+      ..moveTo(size.width * 0.5, size.height)
+      ..quadraticBezierTo(
+        size.width * 0.75,
+        size.height * 0.5,
+        size.width,
+        size.height * 0.55,
+      )
+      ..lineTo(size.width, size.height)
+      ..close();
+
+    final orangePaint = Paint()
+      ..color = const Color(0xFFF18743)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(orangePath, orangePaint);
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return false;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
 class _LoginHeroPanel extends StatelessWidget {
   const _LoginHeroPanel();
 
@@ -1674,19 +1629,20 @@ class _BrandLockup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final markSize = large ? 54.0 : 38.0;
+    final markSize = large ? 48.0 : 34.0;
     return Row(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _BrandMark(size: markSize),
-        SizedBox(width: large ? 12 : 9),
+        const SizedBox(width: 10),
         Text(
           'SISGO',
           style: TextStyle(
             color: _ink,
-            fontSize: large ? 27 : 20,
+            fontSize: large ? 24 : 18,
             fontWeight: FontWeight.w800,
-            letterSpacing: large ? 4 : 2.5,
+            letterSpacing: 2,
           ),
         ),
       ],
@@ -1825,35 +1781,4 @@ String _formatDate(DateTime date) {
     'Des',
   ];
   return '${date.day} ${months[date.month - 1]} ${date.year}';
-}
-class _DotGrid extends StatelessWidget {
-  const _DotGrid();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(
-        4,
-        (_) => Padding(
-          padding: const EdgeInsets.only(bottom: 9),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-              3,
-              (_) => Container(
-                width: 5,
-                height: 5,
-                margin: const EdgeInsets.only(left: 9),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFF9F4A),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
